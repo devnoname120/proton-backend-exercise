@@ -1,0 +1,29 @@
+{
+  "ProtonMailGlobal": {
+    "config": {
+      "host": "localhost",
+      "port": 3306,
+      "user": "blob-ref-count",
+      "password": "secret"
+    },
+    "checks": [
+      "SentMessage.BlobStorageID",
+      "SentAttachment.BlobStorageID"
+    ]
+  },
+  "ProtonMailShard": {
+    "config": {
+      "host": "localhost",
+      "port": 3307,
+      "user": "blob-ref-count",
+      "password": "secret"
+    },
+    "checks": [
+      "OutsideAttachment.BlobStorageID",
+      "Attachment.BlobStorageID",
+      "ContactData.BlobStorageID",
+      "MessageData.Header",
+      "MessageData.Body"
+    ]
+  }
+}

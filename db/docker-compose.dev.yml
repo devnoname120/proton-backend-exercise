@@ -1,0 +1,18 @@
+# FIXME: use read-only credentials for databases
+
+version: "3.4"
+services:
+  mysql-primary:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: 'YPrQT2c4s@mwjYnbWW6#GMsZJtR'
+    restart: always
+    ports:
+      - 3306:3306
+  mysql-replica:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: 'vQ6%uf54!HXZ4L&ov3#Q9xPAmYq'
+    restart: always
+    ports:
+      - 3307:3306
