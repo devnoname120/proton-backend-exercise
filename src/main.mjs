@@ -1,26 +1,25 @@
-// noinspection SqlAggregates
 import * as Config from './config.mjs';
 
 import {QueryBuilder} from './query/queryBuilder.mjs';
 import {DatabaseConnector} from './database/connector.mjs';
-import {countsCompare} from './references/compare.mjs';
+import {compareCounts} from './references/compare.mjs';
 import {
   recountAll,
   fetchStoredCounts,
-  buildChunkRanges,
+  buildQueryRanges,
 } from './references/compute.mjs';
 
 const dbc = new DatabaseConnector(Config.Databases);
 await dbc.init();
 
-const queryRanges = await buildChunkRanges(dbc, Config.ChunkSize);
+const queryRanges = await buildQueryRanges(dbc, Config.RangeSize);
 
 for (const queryRange of queryRanges) {
   const qb = new QueryBuilder(queryRange);
 
   const storedCounts = await fetchStoredCounts(dbc, qb);
   const recounts = await recountAll(dbc, qb, Config.Checks);
-  countsCompare(storedCounts, recounts, logInconsistencies);
+  compareCounts(storedCounts, recounts, logInconsistencies);
 }
 
 await dbc.finish();

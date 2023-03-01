@@ -5,6 +5,9 @@ export class QueryRange {
   }
 }
 
+/**
+ * A QueryRange wrapper that enables to iterate on ranges.
+ */
 export class QueryRangeCollection {
   constructor(ranges) {
     this.ranges = ranges;

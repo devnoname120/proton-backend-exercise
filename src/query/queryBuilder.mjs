@@ -1,9 +1,16 @@
+/**
+ * A helper class to build SQL queries. It enables to set a queryRange once, which is then used to create several queries.
+ * @see README.md for a documentation of these queries.
+ */
 export class QueryBuilder {
+  /**
+   * @param queryRange A QueryRange that will be applied to all the built queries.
+   */
   constructor(queryRange) {
     this.queryRange = queryRange;
   }
 
-  static ChunkRanges(chunkSize) {
+  static QueryRanges(rangeSize) {
     return `
       SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 
@@ -11,7 +18,7 @@ export class QueryBuilder {
 
       SELECT @row := @row +1 AS rownum, BlobStorageID as BlobID
       FROM ProtonMailGlobal.BlobStorage
-      HAVING (rownum-1) % ${chunkSize + 1} = 0
+      HAVING (rownum-1) % ${rangeSize + 1} = 0
       ORDER BY BlobStorageID;
     `;
   }

@@ -1,6 +1,12 @@
 import _ from 'lodash';
 
-export function countsCompare(storedCounts, recounts, callback) {
+/**
+ * Compare the reference counts fetched from BlobStorage to the ones that we recounted.
+ * @param storedCounts The counts that were fetched from BlobStorage.
+ * @param recounts The complete recounts.
+ * @param callback A function that is called for each reference count mismatch.
+ */
+export function compareCounts(storedCounts, recounts, callback) {
   const definitionsCount = _.reduce(storedCounts, countByRef, {});
   const allReferencesCount = _.reduce(recounts, countByRef, {});
 

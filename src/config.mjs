@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import _ from 'lodash';
 
-export const {ChunkSize, ConcurrentRecounts} = JSON.parse(
+export const {RangeSize} = JSON.parse(
   await fs.readFile('config/checker.json', 'utf-8')
 );
 

@@ -9,7 +9,7 @@
     FLUSH PRIVILEGES;
     ```
 4) Configure the databases and checked columns in `config/databases.json`.
-5) Adjust the `ChunkSize` in `config/checker.json`. It's set to `500` by default but it would be reasonable to increase it to e.g. a few millions when running on large tables.
+5) Adjust the `RangeSize` in `config/checker.json`. It's set to `500` by default but it would be reasonable to increase it to e.g. a few millions when running on large tables.
 6) Install [Node.js](https://nodejs.org/en/).
 7) Run `npm install` in the project directory.
 8) Run `npm run consistency-check` to perform the consistency checking process.
@@ -68,7 +68,7 @@ SELECT 0 INTO @row;
 
 SELECT @row := @row +1 AS rownum, BlobStorageID as BlobID
 FROM ProtonMailGlobal.BlobStorage
-HAVING (rownum-1) % ${chunkSize + 1} = 0
+HAVING (rownum-1) % ${rangeSize + 1} = 0
 ORDER BY BlobStorageID;
 ```
 
@@ -78,7 +78,7 @@ Running an `EXPLAIN` on this query shows that it's indeed highly performant. The
 **Explanations**:
 - The first line sets the isolation level to [`READ UNCOMMITTED`](https://dev.mysql.com/doc/refman/5.7/en/innodb-transaction-isolation-levels.html#isolevel_read-uncommitted) (dirty reads). This improves the performances especially in the context of write-heavy databases. The downside is that the data that we read may change in live as we go through the rows. This isn't a problem in practice here as we only need to get intervals that are roughly balanced.
 - The `@row` variable is used to count rows in real-time as we traverse the index. Note that it's carefully placed at the top-level `SELECT` rather than in a subquery (it would cause MySQL to secretly create a private materialized temporary table which ruins performances).
-- The `HAVING` clause does a modulo on the current row number in order to only return the BlobStorageID of the `chunkSize`th row.
+- The `HAVING` clause does a modulo on the current row number in order to only return the BlobStorageID of the `rangeSize`th row.
 - Note that the use of a `HAVING` clause instead of a `WHERE` clause is deliberate. Since the condition is on the variable `rownum` (which is not an index), using a `WHERE` condition leads MySQL to create a temporary table to be able to filter the results. `HAVING` forces MySQL to do a post-filter after each row, which doesn't degrade the performances at all in this case (removing the `HAVING` clause doesn't reduce the number of rows that MySQL traverses).
 
 Note that we can't rely on `LIMIT`/`OFFSET` for the ranges because they would incur [massive performance penalties](https://www.oreilly.com/library/view/high-performance-mysql/9780596101718/ch04.html#optimizing_limit_and_offset) (unwanted table rescans), and would additionally cause double-counting issues and missed counts (data races which change the rows that the offsets point to).
