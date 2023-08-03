@@ -59,7 +59,7 @@ The queries were very carefully designed to optimize their performance using adv
 ## Balanced ID range building
 
 In order to make efficient parallelization possible, the `BlobStorageID` key space needs to be divided in ranges with roughly the same number of rows in each. Since `BlobStorageID` is sparse (there are sometimes big “holes” between IDs), we can't determine ranges without doing a first pass.
-The balanced rangers are achieved through an initial query that returns balanced ranges.
+The balanced ranges are built through an initial query.
 
 ```sql
 SET SESSION TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
